@@ -1,6 +1,6 @@
-from transformers import BertTokenizer 
+from transformers import BertTokenizerFast
 from transformers import TFBertModel 
-from transformers import RobertaTokenizer 
+from transformers import RobertaTokenizerFast 
 from transformers import TFRobertaModel 
 import tensorflow as tf 
 from tensorflow import keras 
@@ -25,20 +25,19 @@ import os
 # args = parser.parse_args() 
 # args = vars(args)
 
-
-class Model(): 
+class TransformerModel: 
     def __init__(self, model_name = "bert", dataset_path = None, pre_trained = None) -> None:
         self.pre_trained = pre_trained
         self.name = model_name
         if model_name == "bert": 
-            self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')  
+            self.tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')  
             self.model = TFBertModel.from_pretrained('bert-base-uncased')
         elif model_name == "roberta": 
-            self.tokenizer = RobertaTokenizer.from_pretrained('roberta-base') 
+            self.tokenizer = RobertaTokenizerFast.from_pretrained('roberta-base') 
             self.model = TFRobertaModel.from_pretrained('roberta-base')
 
 
-        if not dataset_path: 
+        if dataset_path is not None: 
             self.X_train, self.Y_train = None, None  
             self.X_test, self.Y_test = None, None 
             self.X_val,  self.Y_val = None, None  
@@ -52,7 +51,7 @@ class Model():
             self.test_input_ids, self.test_attention_masks = self.tokenize(self.X_test)
 
             self.Y_train = self.Y_train.to_numpy() 
-            self.Y_test = self.Y_test.to_numpy() 
+            self.Y_test = self.Y_test.to_numpy()
             self.Y_val = self.Y_val.to_numpy()
 
         self.seq_model = self.create_model() 
@@ -68,7 +67,7 @@ class Model():
             token_lens.append(len(tokens))
             
         max_len = np.max(token_lens)
-        self.MAX_LEN = np.ceil(np.log2(max_len))
+        self.MAX_LEN = int(2**np.ceil(np.log2(max_len)))
         print(f"MAX TOKENIZED SENTENCE LENGTH: {self.MAX_LEN}")
 
 
@@ -94,7 +93,7 @@ class Model():
         X_val = X_val.map(remove_mult_spaces)  
 
         self.X_train, self.Y_train, self.X_test, self.Y_test, self.X_val, self.Y_val = X_train, Y_train, X_test, Y_test, X_val, Y_val   
-    
+
     def create_model(self):
         opt = tf.keras.optimizers.Adam(learning_rate=1e-5)
         # loss = tf.keras.losses.CategoricalCrossentropy()
