@@ -57,40 +57,6 @@ class Model():
 
         self.seq_model = self.create_model() 
 
-    def create_model(self):
-        opt = tf.keras.optimizers.Adam(learning_rate=1e-5)
-        # loss = tf.keras.losses.CategoricalCrossentropy()
-        loss = tf.keras.losses.BinaryCrossentropy()
-        accuracy = tf.keras.metrics.CategoricalAccuracy() 
-        precision = tf.keras.metrics.Precision() 
-        recall = tf.keras.metrics.Recall()
-
-        input_ids = tf.keras.Input(shape=(self.MAX_LEN,),dtype='int32')
-        attention_masks = tf.keras.Input(shape=(self.MAX_LEN,),dtype='int32')
-        embeddings = self.model([input_ids,attention_masks])[1]
-        
-        output = tf.keras.layers.Dense(256, activation="relu")(embeddings) 
-        output = tf.keras.layers.Dense(64, activation="relu")(output) 
-        # output = tf.keras.layers.Dense(7, activation ="softmax")(output)  
-        output = tf.keras.layers.Dense(7, activation = "sigmoid")(output)
-        # Sigmoid is better for our case because we need probability of every class independently, since an instance can belong to multiple classes as well
-
-        seq_model = tf.keras.models.Model(inputs = [input_ids, attention_masks], outputs = output) 
-        seq_model.compile(opt, loss=loss, metrics = [accuracy, precision, recall])
-        if self.pre_trained is not None: 
-            if os.path.exists(self.pre_trained): 
-                try: 
-                    seq_model.load_weights(self.pre_trained) 
-                    print("loaded pre-trained model weights") 
-                except: 
-                    print("Unable to load pretrained model.")
-            else: 
-                print("path to pre-trained model not found") 
-        else: 
-            print("No Pre-trained model provided. Creating a fresh model with randomly initialized weights") 
-
-        print(seq_model.summary())
-        return seq_model 
 
 
     def feed_data(self, data): 
@@ -128,6 +94,41 @@ class Model():
         X_val = X_val.map(remove_mult_spaces)  
 
         self.X_train, self.Y_train, self.X_test, self.Y_test, self.X_val, self.Y_val = X_train, Y_train, X_test, Y_test, X_val, Y_val   
+    
+    def create_model(self):
+        opt = tf.keras.optimizers.Adam(learning_rate=1e-5)
+        # loss = tf.keras.losses.CategoricalCrossentropy()
+        loss = tf.keras.losses.BinaryCrossentropy()
+        accuracy = tf.keras.metrics.CategoricalAccuracy() 
+        precision = tf.keras.metrics.Precision() 
+        recall = tf.keras.metrics.Recall()
+
+        input_ids = tf.keras.Input(shape=(self.MAX_LEN,),dtype='int32')
+        attention_masks = tf.keras.Input(shape=(self.MAX_LEN,),dtype='int32')
+        embeddings = self.model([input_ids,attention_masks])[1]
+        
+        output = tf.keras.layers.Dense(256, activation="relu")(embeddings) 
+        output = tf.keras.layers.Dense(64, activation="relu")(output) 
+        # output = tf.keras.layers.Dense(7, activation ="softmax")(output)  
+        output = tf.keras.layers.Dense(7, activation = "sigmoid")(output)
+        # Sigmoid is better for our case because we need probability of every class independently, since an instance can belong to multiple classes as well
+
+        seq_model = tf.keras.models.Model(inputs = [input_ids, attention_masks], outputs = output) 
+        seq_model.compile(opt, loss=loss, metrics = [accuracy, precision, recall])
+        if self.pre_trained is not None: 
+            if os.path.exists(self.pre_trained): 
+                try: 
+                    seq_model.load_weights(self.pre_trained) 
+                    print("loaded pre-trained model weights") 
+                except: 
+                    print("Unable to load pretrained model.")
+            else: 
+                print("path to pre-trained model not found") 
+        else: 
+            print("No Pre-trained model provided. Creating a fresh model with randomly initialized weights") 
+
+        print(seq_model.summary())
+        return seq_model 
 
 
     def tokenize(self, data): 
