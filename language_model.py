@@ -36,12 +36,12 @@ class TransformerModel:
             self.tokenizer = RobertaTokenizerFast.from_pretrained('roberta-base') 
             self.model = TFRobertaModel.from_pretrained('roberta-base')
 
+        self.MAX_LEN = 256 # this value will be adjusted after you call the model, but you can also put an estimate here. 
 
         if dataset_path is not None: 
             self.X_train, self.Y_train = None, None  
             self.X_test, self.Y_test = None, None 
             self.X_val,  self.Y_val = None, None  
-            self.MAX_LEN = None 
 
             df = pd.read_csv(dataset_path)
             self.feed_data(df)
