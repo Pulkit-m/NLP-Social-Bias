@@ -157,7 +157,7 @@ class TransformerModel:
             mode='max',
             save_frequency="epoch")
         
-        history_bert = self.seq_model.fit([self.train_input_ids,self.train_attention_masks], self.Y_train, validation_data=([self.val_input_ids,self.           val_attention_masks], self.Y_valid), epochs=num_epochs, batch_size=batch_size, callbacks = [model_checkpoint_callback])
+        history_bert = self.seq_model.fit([self.train_input_ids,self.train_attention_masks], self.Y_train, validation_data=([self.val_input_ids,self.val_attention_masks], self.Y_val), epochs=num_epochs, batch_size=batch_size, callbacks = [model_checkpoint_callback])
         self.seq_model.save_weights(f'./trained_models/{self.name}_trained_{num_epochs}epochs.ckpt')
 
 
