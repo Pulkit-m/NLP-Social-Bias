@@ -17,13 +17,13 @@ import argparse
 from pathlib import Path 
 import os 
 
-parser = argparse.ArgumentParser() 
-parser.add_argument("-p","--path_to_dataset",default="./datasets/processed_df.csv", help="path to processed csv file ready to feed into the model. One hot encoding already done")
-parser.add_argument("-m","--model",default='bert',choices=['bert','roberta']) 
-parser.add_argument("--pre_trained", default = None, help = "path of pre-trained model to continue training")
+# parser = argparse.ArgumentParser() 
+# parser.add_argument("-p","--path_to_dataset",default="./datasets/processed_df.csv", help="path to processed csv file ready to feed into the model. One hot encoding already done")
+# parser.add_argument("-m","--model",default='bert',choices=['bert','roberta']) 
+# parser.add_argument("--pre_trained", default = None, help = "path of pre-trained model to continue training")
 
-args = parser.parse_args() 
-args = vars(args)
+# args = parser.parse_args() 
+# args = vars(args)
 
 
 class Model(): 
